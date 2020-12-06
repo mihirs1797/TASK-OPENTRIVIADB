@@ -195,7 +195,7 @@ function validateAnswer(e) {
 function updateContent(questionNumber){
     document.getElementById("question").innerHTML = "Q. "+responseObject[questionNumber].question;
     document.getElementById("quesNum").innerHTML = "Question: "+parseInt(questionNumber+1)+"/10";
-    document.getElementById("optionBtn1").innerHTML =  
+    // document.getElementById("optionBtn1").innerHTML =  " ";
 }
 
 function updateScore(){
