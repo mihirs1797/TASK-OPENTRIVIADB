@@ -29,7 +29,7 @@ function welcomeScreen() {
     var score = document.createElement("h5");
     score.setAttribute("class", "card-text text-center");
     var link = document.createElement("a");
-    link.href = " ";
+    link.href = "highscore.html";
     link.innerHTML = "High Scores!";
     //render section
     score.appendChild(link);
@@ -178,23 +178,50 @@ function displayQuestions(q) {
 }
 
 function validateAnswer(e) {
-    if(questionNumber<10){
+    if(questionNumber===9){
         if (e.target.value === responseObject[questionNumber].correct_answer) {
+            console.log('CORRECT ANSWER!')
             questionNumber++;            
-            updateScore();
-    
-            updateContent(questionNumber);
+            updateScore();  
+            loadEndPage();  
+        }
+        else if(responseObject[questionNumber].incorrect_answers.includes(e.target.value)){
+            questionNumber++;
+            loadEndPage(); 
+        }            
+        localStorage.setItem("scoreValue",score);
+    }
+    else{
+        if (e.target.value === responseObject[questionNumber].correct_answer) {
+            console.log('CORRECT ANSWER!')
+            questionNumber++;            
+            updateScore();    
+            updateContent(questionNumber);                
         }
         else if(responseObject[questionNumber].incorrect_answers.includes(e.target.value)){
             questionNumber++;
             updateContent(questionNumber);
         }
-    }    
+    } 
 }
 
 function updateContent(questionNumber){
     document.getElementById("question").innerHTML = "Q. "+responseObject[questionNumber].question;
     document.getElementById("quesNum").innerHTML = "Question: "+parseInt(questionNumber+1)+"/10";
+
+    var seq = [1,2,3,4];
+    var jumbledSeq = randomiseArray(seq);
+
+    document.getElementById("optionBtn"+jumbledSeq[0]).value = responseObject[questionNumber].correct_answer;
+    document.getElementById("optionBtn"+jumbledSeq[1]).value = responseObject[questionNumber].incorrect_answers[0];
+    document.getElementById("optionBtn"+jumbledSeq[2]).value = responseObject[questionNumber].incorrect_answers[1];
+    document.getElementById("optionBtn"+jumbledSeq[3]).value = responseObject[questionNumber].incorrect_answers[2];
+
+    document.getElementById("optionBtn"+jumbledSeq[0]).innerHTML = responseObject[questionNumber].correct_answer;
+    document.getElementById("optionBtn"+jumbledSeq[1]).innerHTML = responseObject[questionNumber].incorrect_answers[0];
+    document.getElementById("optionBtn"+jumbledSeq[2]).innerHTML = responseObject[questionNumber].incorrect_answers[1];
+    document.getElementById("optionBtn"+jumbledSeq[3]).innerHTML = responseObject[questionNumber].incorrect_answers[2];
+
     // document.getElementById("optionBtn1").innerHTML =  " ";
 }
 
@@ -203,12 +230,75 @@ function updateScore(){
     document.getElementById("score").innerHTML = "Score: "+score;
 }
 
+//----------------------------end of game.html-------------------------------------------------------------
 
+//---------------------------start of end.html------------------------------------------------------------------
+function loadEndPage(){
+    window.location.href = "end.html";
+    console.log(localStorage.getItem("scoreValue"));
+    displayResults();
+}
 
-// GetAPIResposne
-// Document.ready
-// renderTheQuestionAndAnswers
-// TriggerEvent 
-// validate
-// based on true for validate you need to increase counter for new question from object and then update the value shown on screen
-// if false show alert('wrogn answer' )
+function displayResults(){
+    var endContainer = document.createElement("div");
+    endContainer.setAttribute("class","container");
+    var endCard = document.createElement("div");
+    endCard.setAttribute("class","card bg-dark text-white mx-auto welcome");
+    var endCardBody = document.createElement("div");
+    endCardBody.setAttribute("class","card-body text-center");
+    var scoreDisplay = document.createElement("h3");
+    scoreDisplay.setAttribute("class","card-text text-center");
+    scoreDisplay.innerHTML = "YOUR SCORE : "+localStorage.getItem("scoreValue");
+    var form = document.createElement("form");
+    var formGroup = document.createElement("div");
+    formGroup.setAttribute("class","form-group");
+    var labelName = document.createElement("label");
+    labelName.setAttribute("for","name");
+    labelName.innerHTML = "Your Name:"
+    var textArea = document.createElement("textarea");
+    textArea.setAttribute("class","form-control");
+    textArea.setAttribute("id","username");
+    textArea.setAttribute("rows","2");
+    textArea.required = true;
+    var saveButton = document.createElement("button");
+    saveButton.setAttribute("class","btn btn-outline-light btn-block text-center mt-5");
+    saveButton.setAttribute("id","save");
+    saveButton.innerHTML = "SAVE";
+    saveButton.addEventListener('click',function(){
+        localStorage.setItem("user1",textArea.value);
+        alert("Record Saved!");
+        console.log(localStorage.getItem("user1"));
+    });
+    var playAgain = document.createElement("button");
+    playAgain.setAttribute("class","btn btn-outline-light btn-block text-center mt-2");
+    playAgain.innerHTML = "Play Again!";
+    playAgain.href = "game.html";
+    playAgain.addEventListener("click",function(){
+        window.location.href="game.html";
+    })
+
+    var homeButton = document.createElement("button");
+    homeButton.setAttribute("class","btn btn-outline-light btn-block text-center mt-2");
+    homeButton.innerHTML = "HOMEPAGE";
+    homeButton.href = "index.html";
+    homeButton.addEventListener("click",function(){
+        window.location.href="index.html";
+    })
+    
+
+    form.append(labelName,textArea);
+    endCardBody.append(scoreDisplay,form,saveButton,playAgain,homeButton);
+    endCard.append(endCardBody);
+    endContainer.append(endCard);
+
+    document.body.appendChild(endContainer);
+
+}
+
+function highScoresDisplay(){
+    document.getElementById("userInfo").innerHTML = localStorage.getItem("user1");
+    document.getElementById("highscore").innerHTML = localStorage.getItem("scoreValue");
+    document.getElementById("returnHome").addEventListener("click",function(){
+        window.location.href = "index.html";
+    })
+}
